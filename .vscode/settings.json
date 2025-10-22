@@ -1,3 +1,7 @@
 {
-	"prettier.configPath": ".prettierrc"
+  "prettier.configPath": ".prettierrc",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "cSpell.words": ["virtuals"]
 }
