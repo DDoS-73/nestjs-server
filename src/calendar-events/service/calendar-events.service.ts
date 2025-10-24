@@ -25,8 +25,14 @@ export class CalendarEventsService {
     });
   }
 
-  public getAll(): Promise<CalendarEventDocument[]> {
-    return this.calendarEventModel.find().populate('participant').exec();
+  public getAll(from: string, to: string): Promise<CalendarEventDocument[]> {
+    return this.calendarEventModel
+      .find({
+        startTime: { $gte: from },
+        endTime: { $lte: to },
+      })
+      .populate('participant')
+      .exec();
   }
 
   public delete(_id: string): Promise<DeleteResult> {

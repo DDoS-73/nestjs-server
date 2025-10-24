@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import type { Response } from 'express';
@@ -25,8 +26,11 @@ export class CalendarEventsController {
   }
 
   @Get()
-  public getAll(): Promise<CalendarEventDocument[]> {
-    return this.calendarEventsService.getAll();
+  public getAll(
+    @Query('from') from: string,
+    @Query('to') to: string,
+  ): Promise<CalendarEventDocument[]> {
+    return this.calendarEventsService.getAll(from, to);
   }
 
   @Delete(':id')
