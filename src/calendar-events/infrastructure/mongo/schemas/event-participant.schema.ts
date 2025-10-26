@@ -13,6 +13,14 @@ export type EventParticipantDocument = HydratedDocument<EventParticipant>;
       return { ...ret, _id: undefined };
     },
   },
+  toObject: {
+    virtuals: true,
+    versionKey: false,
+    schemaFieldsOnly: true,
+    transform: (doc, ret) => {
+      return { ...ret, _id: undefined };
+    },
+  },
 })
 export class EventParticipant {
   @Prop({ required: true, unique: true })

@@ -1,27 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import {
-  EventParticipant,
-  EventParticipantDocument,
-} from '../schemas/event-participant.schema';
+import { Inject, Injectable } from '@nestjs/common';
+import { EventParticipantEntity } from 'src/calendar-events/entities';
+import { CreateEventParticipantDto } from '../dto';
+import type { IEventParticipantRepository } from '../repositories';
+import { EVENT_PARTICIPANT_REPOSITORY } from '../repositories';
 
 @Injectable()
 export class EventParticipantService {
   constructor(
-    @InjectModel(EventParticipant.name)
-    private eventParticipantModel: Model<EventParticipantDocument>,
+    @Inject(EVENT_PARTICIPANT_REPOSITORY)
+    private eventParticipantRepository: IEventParticipantRepository,
   ) {}
 
-  public getByName(name: string): Promise<EventParticipantDocument | null> {
-    return this.eventParticipantModel.findOne({ name }).exec();
+  public getAll(): Promise<EventParticipantEntity[]> {
+    return this.eventParticipantRepository.getAll();
   }
 
-  public create(name: string): Promise<EventParticipantDocument> {
-    return this.eventParticipantModel.create({ name });
+  public getByName(name: string): Promise<EventParticipantEntity | null> {
+    return this.eventParticipantRepository.getByName(name);
   }
 
-  public getAll(): Promise<EventParticipantDocument[]> {
-    return this.eventParticipantModel.find().exec();
+  public create(
+    eventParticipant: CreateEventParticipantDto,
+  ): Promise<EventParticipantEntity> {
+    return this.eventParticipantRepository.create(eventParticipant);
   }
 }

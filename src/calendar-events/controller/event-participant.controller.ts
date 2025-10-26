@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { EventParticipantDocument } from '../schemas/event-participant.schema';
+import { EventParticipantEntity } from 'src/calendar-events/entities';
 import { EventParticipantService } from '../service';
 
 @Controller('participants')
@@ -9,7 +9,7 @@ export class EventParticipantController {
   ) {}
 
   @Get()
-  public getAll(): Promise<EventParticipantDocument[]> {
+  public getAll(): Promise<EventParticipantEntity[]> {
     return this.eventParticipantService.getAll();
   }
 }

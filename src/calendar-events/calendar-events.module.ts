@@ -1,21 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { CalendarEventsController } from './controller';
 import { EventParticipantController } from './controller/event-participant.controller';
-import { CalendarEvent, CalendarEventSchema } from './schemas';
-import {
-  EventParticipant,
-  EventParticipantSchema,
-} from './schemas/event-participant.schema';
+import { MongoModule } from './infrastructure/mongo/mongo.module';
 import { CalendarEventsService, EventParticipantService } from './service';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: CalendarEvent.name, schema: CalendarEventSchema },
-      { name: EventParticipant.name, schema: EventParticipantSchema },
-    ]),
-  ],
+  imports: [MongoModule],
   controllers: [CalendarEventsController, EventParticipantController],
   providers: [CalendarEventsService, EventParticipantService],
 })

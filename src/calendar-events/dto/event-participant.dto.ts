@@ -1,11 +1,15 @@
-import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import mongoose from 'mongoose';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class EventParticipantDto {
   @IsOptional()
-  @IsMongoId()
-  id?: mongoose.Types.ObjectId;
+  @IsString()
+  id?: string;
 
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+}
+export class CreateEventParticipantDto {
   @IsNotEmpty()
   @IsString()
   name: string;

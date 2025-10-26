@@ -10,8 +10,8 @@ import {
   Res,
 } from '@nestjs/common';
 import type { Response } from 'express';
-import { CalendarEventDto } from '../dto';
-import { CalendarEventDocument } from '../schemas';
+import { CalendarEventEntity } from 'src/calendar-events/entities';
+import { CreateCalendarEventDto, UpdateCalendarEventDto } from '../dto';
 import { CalendarEventsService } from '../service/calendar-events.service';
 
 @Controller('events')
@@ -20,8 +20,8 @@ export class CalendarEventsController {
 
   @Post()
   public create(
-    @Body() calendarEventDto: CalendarEventDto,
-  ): Promise<CalendarEventDocument> {
+    @Body() calendarEventDto: CreateCalendarEventDto,
+  ): Promise<CalendarEventEntity> {
     return this.calendarEventsService.create(calendarEventDto);
   }
 
@@ -29,8 +29,8 @@ export class CalendarEventsController {
   public getAll(
     @Query('from') from: string,
     @Query('to') to: string,
-  ): Promise<CalendarEventDocument[]> {
-    return this.calendarEventsService.getAll(from, to);
+  ): Promise<CalendarEventEntity[]> {
+    return this.calendarEventsService.getAllInDateRange(from, to);
   }
 
   @Delete(':id')
@@ -44,8 +44,9 @@ export class CalendarEventsController {
 
   @Patch(':id')
   public async update(
-    @Body() calendarEventDto: CalendarEventDto,
-  ): Promise<CalendarEventDocument> {
-    return this.calendarEventsService.update(calendarEventDto);
+    @Body() calendarEventDto: UpdateCalendarEventDto,
+    @Param('id') id: string,
+  ): Promise<CalendarEventEntity> {
+    return this.calendarEventsService.update(id, calendarEventDto);
   }
 }

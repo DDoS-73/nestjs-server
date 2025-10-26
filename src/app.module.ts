@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MongooseConfigService } from './config/mongoose-config.service';
+import { MongooseConfigService } from './calendar-events/infrastructure/mongo/mongoose-config.service';
 import { CalendarEventsModule } from './calendar-events/calendar-events.module';
 
 @Module({

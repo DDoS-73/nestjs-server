@@ -14,6 +14,14 @@ export type CalendarEventDocument = HydratedDocument<CalendarEvent>;
       return { ...ret, _id: undefined };
     },
   },
+  toObject: {
+    virtuals: true,
+    schemaFieldsOnly: true,
+    versionKey: false,
+    transform: (doc, ret) => {
+      return { ...ret, _id: undefined };
+    },
+  },
 })
 export class CalendarEvent {
   @Prop({ required: true })

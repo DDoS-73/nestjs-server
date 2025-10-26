@@ -1,18 +1,12 @@
 import {
   IsDateString,
-  IsMongoId,
   IsNotEmpty,
-  IsOptional,
+  IsString,
   ValidateNested,
 } from 'class-validator';
-import mongoose from 'mongoose';
 import { EventParticipantDto } from './event-participant.dto';
 
-export class CalendarEventDto {
-  @IsOptional()
-  @IsMongoId()
-  id?: mongoose.Types.ObjectId;
-
+export class CreateCalendarEventDto {
   @IsNotEmpty()
   @IsDateString()
   startTime: string;
@@ -24,4 +18,9 @@ export class CalendarEventDto {
   @IsNotEmpty()
   @ValidateNested()
   participant: EventParticipantDto;
+}
+
+export class UpdateCalendarEventDto extends CreateCalendarEventDto {
+  @IsString()
+  id: string;
 }
