@@ -14,8 +14,9 @@ import type { Response } from 'express';
 import { CalendarEventEntity } from 'src/calendar-events/entities';
 import {
   CreateCalendarEventDto,
-  DeleteCalendarEventDto,
+  DeleteCalendarEventBodyDto,
   UpdateCalendarEventDto,
+  UpdateCalendarEventQueryDto,
 } from '../dto';
 import { CalendarEventsService } from '../service/calendar-events.service';
 
@@ -55,7 +56,7 @@ export class CalendarEventsController {
   @Delete(':id')
   public async delete(
     @Param('id') id: string,
-    @Query() deleteEventDto: DeleteCalendarEventDto,
+    @Query() deleteEventDto: DeleteCalendarEventBodyDto,
     @Res() res: Response,
   ): Promise<Response> {
     await this.calendarEventsService.delete(
@@ -69,8 +70,14 @@ export class CalendarEventsController {
   @Patch(':id')
   public async update(
     @Body() calendarEventDto: UpdateCalendarEventDto,
+    @Query() query: UpdateCalendarEventQueryDto,
     @Param('id') id: string,
   ): Promise<CalendarEventEntity> {
-    return this.calendarEventsService.update(id, calendarEventDto);
+    return this.calendarEventsService.update(
+      id,
+      query.mode,
+      query.date,
+      calendarEventDto,
+    );
   }
 }
