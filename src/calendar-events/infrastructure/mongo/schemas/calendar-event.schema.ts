@@ -36,6 +36,9 @@ export class CalendarEvent {
 
   @Prop({ type: RecurrenceSchema, required: false })
   recurrence?: Recurrence;
+
+  @Prop({ type: [Date], default: [] })
+  exceptions: Date[];
 }
 
 export const CalendarEventSchema = SchemaFactory.createForClass(CalendarEvent);

@@ -12,7 +12,11 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { CalendarEventEntity } from 'src/calendar-events/entities';
-import { CreateCalendarEventDto, UpdateCalendarEventDto } from '../dto';
+import {
+  CreateCalendarEventDto,
+  DeleteCalendarEventDto,
+  UpdateCalendarEventDto,
+} from '../dto';
 import { CalendarEventsService } from '../service/calendar-events.service';
 
 @Controller('events')
@@ -51,9 +55,14 @@ export class CalendarEventsController {
   @Delete(':id')
   public async delete(
     @Param('id') id: string,
+    @Query() deleteEventDto: DeleteCalendarEventDto,
     @Res() res: Response,
   ): Promise<Response> {
-    await this.calendarEventsService.delete(id);
+    await this.calendarEventsService.delete(
+      id,
+      deleteEventDto.mode,
+      deleteEventDto.date,
+    );
     return res.status(200).json({ message: 'Success' });
   }
 

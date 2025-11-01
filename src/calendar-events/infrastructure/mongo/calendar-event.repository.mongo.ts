@@ -2,10 +2,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { plainToInstance } from 'class-transformer';
 import { Model } from 'mongoose';
 import {
-  CreateCalendarEventDto,
-  UpdateCalendarEventDto,
-} from 'src/calendar-events/dto';
-import {
   CalendarEventEntity,
   RecurrenceFrequency,
 } from 'src/calendar-events/entities';
@@ -56,7 +52,7 @@ export class CalendarEventRepositoryMongo implements ICalendarEventRepository {
   }
 
   public async create(
-    calendarEvent: CreateCalendarEventDto,
+    calendarEvent: CalendarEventEntity,
   ): Promise<CalendarEventEntity> {
     const document: CalendarEventDocument =
       await this.calendarEventModel.create({
@@ -68,7 +64,7 @@ export class CalendarEventRepositoryMongo implements ICalendarEventRepository {
 
   public async update(
     id: string,
-    calendarEvent: UpdateCalendarEventDto,
+    calendarEvent: CalendarEventEntity,
   ): Promise<CalendarEventEntity> {
     const updatedEvent: CalendarEventDocument | null =
       await this.calendarEventModel
@@ -87,5 +83,15 @@ export class CalendarEventRepositoryMongo implements ICalendarEventRepository {
 
   public async delete(id: string): Promise<void> {
     await this.calendarEventModel.deleteOne({ _id: id }).exec();
+  }
+
+  public async findById(id: string): Promise<CalendarEventEntity | null> {
+    const event: CalendarEventDocument | null = await this.calendarEventModel
+      .findById(id)
+      .populate('participant')
+      .exec();
+    return event
+      ? plainToInstance(CalendarEventEntity, event.toObject())
+      : null;
   }
 }

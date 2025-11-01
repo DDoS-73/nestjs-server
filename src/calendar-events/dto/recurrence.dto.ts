@@ -1,4 +1,5 @@
-import { IsDateString, IsEnum, IsInt, IsOptional, Min } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsEnum, IsInt, Min } from 'class-validator';
 import { RecurrenceFrequency } from '../entities';
 
 export class RecurrenceDto {
@@ -7,10 +8,9 @@ export class RecurrenceDto {
 
   @IsInt()
   @Min(1)
-  @IsOptional()
-  interval?: number;
+  @Transform(({ value }) => (value ? Number(value) : 1))
+  interval: number;
 
-  @IsOptional()
-  @IsDateString()
-  endDate: string | null;
+  @Transform(({ value }) => (value ? new Date(value) : null))
+  endDate: Date | null;
 }

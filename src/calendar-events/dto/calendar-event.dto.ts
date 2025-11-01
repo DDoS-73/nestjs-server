@@ -1,34 +1,48 @@
+import { Transform, Type } from 'class-transformer';
 import {
-  IsDateString,
+  IsDate,
+  IsEnum,
   IsNotEmpty,
   IsString,
   ValidateNested,
-  IsOptional,
 } from 'class-validator';
+import { DeleteMode } from '../enum/delete-mode';
 import { EventParticipantDto } from './event-participant.dto';
 import { RecurrenceDto } from './recurrence.dto';
-import { Type } from 'class-transformer';
 
 export class CreateCalendarEventDto {
   @IsNotEmpty()
-  @IsDateString()
-  startTime: string;
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
+  startTime: Date;
 
   @IsNotEmpty()
-  @IsDateString()
-  endTime: string;
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
+  endTime: Date;
 
   @IsNotEmpty()
   @ValidateNested()
+  @Type(() => EventParticipantDto)
   participant: EventParticipantDto;
 
-  @IsOptional()
   @ValidateNested()
   @Type(() => RecurrenceDto)
-  recurrence?: RecurrenceDto;
+  recurrence: RecurrenceDto;
 }
 
 export class UpdateCalendarEventDto extends CreateCalendarEventDto {
   @IsString()
   id: string;
+}
+
+export class DeleteCalendarEventDto {
+  @IsEnum(DeleteMode)
+  @IsNotEmpty()
+  mode: DeleteMode;
+
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  @IsNotEmpty()
+  date: Date;
 }
