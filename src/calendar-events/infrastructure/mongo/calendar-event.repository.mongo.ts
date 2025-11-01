@@ -5,7 +5,10 @@ import {
   CreateCalendarEventDto,
   UpdateCalendarEventDto,
 } from 'src/calendar-events/dto';
-import { CalendarEventEntity } from 'src/calendar-events/entities';
+import {
+  CalendarEventEntity,
+  RecurrenceFrequency,
+} from 'src/calendar-events/entities';
 import {
   CalendarEvent,
   CalendarEventDocument,
@@ -22,49 +25,64 @@ export class CalendarEventRepositoryMongo implements ICalendarEventRepository {
   ) {}
 
   public async getAllInDateRange(
-    from: string,
-    to: string,
+    from: Date,
+    to: Date,
   ): Promise<CalendarEventEntity[]> {
-    const events: CalendarEventDocument[] = await this.calendarEventModel
+    return await this.calendarEventModel
       .find({
-        startTime: { $gte: from },
-        endTime: { $lte: to },
+        startTime: { $lte: to },
+        $or: [
+          {
+            'recurrence.frequency': RecurrenceFrequency.NONE,
+            endTime: { $gte: from },
+          },
+          {
+            'recurrence.frequency': { $ne: RecurrenceFrequency.NONE },
+            $or: [
+              { 'recurrence.endDate': null },
+              { 'recurrence.endDate': { $gte: from } },
+            ],
+          },
+        ],
       })
       .populate('participant')
-      .exec();
-
-    return plainToInstance(
-      CalendarEventEntity,
-      events.map((event) => event.toObject()),
-    );
+      .exec()
+      .then((events) =>
+        plainToInstance(
+          CalendarEventEntity,
+          events.map((event) => event.toObject()),
+        ),
+      );
   }
 
   public async create(
     calendarEvent: CreateCalendarEventDto,
   ): Promise<CalendarEventEntity> {
-    const document = await this.calendarEventModel.create({
-      ...calendarEvent,
-      participant: calendarEvent.participant.id,
-    });
-    return plainToInstance(CalendarEventEntity, document);
+    const document: CalendarEventDocument =
+      await this.calendarEventModel.create({
+        ...calendarEvent,
+        participant: calendarEvent.participant.id,
+      });
+    return plainToInstance(CalendarEventEntity, document.toObject());
   }
 
   public async update(
     id: string,
     calendarEvent: UpdateCalendarEventDto,
   ): Promise<CalendarEventEntity> {
-    const updatedEvent = await this.calendarEventModel
-      .findByIdAndUpdate(
-        id,
-        {
-          ...calendarEvent,
-          participant: calendarEvent.participant.id,
-        },
-        { new: true },
-      )
-      .exec();
+    const updatedEvent: CalendarEventDocument | null =
+      await this.calendarEventModel
+        .findByIdAndUpdate(
+          id,
+          {
+            ...calendarEvent,
+            participant: calendarEvent.participant.id,
+          },
+          { new: true },
+        )
+        .exec();
 
-    return plainToInstance(CalendarEventEntity, updatedEvent);
+    return plainToInstance(CalendarEventEntity, updatedEvent?.toObject());
   }
 
   public async delete(id: string): Promise<void> {

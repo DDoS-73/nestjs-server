@@ -5,7 +5,7 @@ import {
 import { CalendarEventEntity } from '../../calendar-events/entities';
 
 export interface ICalendarEventRepository {
-  getAllInDateRange(from: string, to: string): Promise<CalendarEventEntity[]>;
+  getAllInDateRange(from: Date, to: Date): Promise<CalendarEventEntity[]>;
   create(calendarEvent: CreateCalendarEventDto): Promise<CalendarEventEntity>;
   update(
     id: string,

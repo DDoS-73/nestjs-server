@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -30,7 +31,21 @@ export class CalendarEventsController {
     @Query('from') from: string,
     @Query('to') to: string,
   ): Promise<CalendarEventEntity[]> {
-    return this.calendarEventsService.getAllInDateRange(from, to);
+    if (!from || !to) {
+      throw new BadRequestException(
+        'Both "from" and "to" query parameters are required.',
+      );
+    }
+
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+
+    if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+      throw new BadRequestException(
+        'Invalid date format for "from" or "to". Please use ISO 8601 format.',
+      );
+    }
+    return this.calendarEventsService.getAllInDateRange(fromDate, toDate);
   }
 
   @Delete(':id')
