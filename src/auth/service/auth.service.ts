@@ -1,0 +1,31 @@
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import bcrypt from 'bcrypt-ts';
+import { SignupDto } from '../dto';
+import { UserEntity } from '../entities';
+import type { IUserRepository } from '../repositories';
+import { USER_REPOSITORY } from '../repositories';
+
+@Injectable()
+export class AuthService {
+  constructor(
+    @Inject(USER_REPOSITORY)
+    private userRepository: IUserRepository,
+  ) {}
+
+  public async signup(userDto: SignupDto): Promise<UserEntity> {
+    const existingUser: UserEntity | null =
+      await this.userRepository.findByEmail(userDto.email);
+    if (existingUser) {
+      throw new ConflictException('User already exists');
+    }
+
+    const hashedPassword: string = await bcrypt.hash(userDto.password, 10);
+
+    const newUser: Omit<UserEntity, 'id'> = new UserEntity({
+      email: userDto.email,
+      name: userDto.name,
+      password: hashedPassword,
+    });
+    return await this.userRepository.create(newUser);
+  }
+}

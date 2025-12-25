@@ -1,18 +1,20 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MongooseConfigService } from './calendar-events/infrastructure/mongo/mongoose-config.service';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { CalendarEventsModule } from './calendar-events/calendar-events.module';
+import { MongooseConfigService } from './calendar-events/infrastructure/mongo/mongoose-config.service';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
       useClass: MongooseConfigService,
     }),
     CalendarEventsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
