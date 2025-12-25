@@ -6,6 +6,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { IsBefore } from 'src/common/decorators/is-before.decorator';
 import { DeleteMode } from '../enum/delete-mode';
 import { UpdateMode } from '../enum/update-mode';
 import { EventParticipantDto } from './event-participant.dto';
@@ -13,13 +14,14 @@ import { RecurrenceDto } from './recurrence.dto';
 
 export class CreateCalendarEventDto {
   @IsNotEmpty()
-  @Transform(({ value }) => new Date(value))
   @IsDate()
+  @IsBefore('endTime', { message: 'startTime must be strictly less than endTime' })
+  @Transform(({ value }) => new Date(value))
   startTime: Date;
 
   @IsNotEmpty()
-  @Transform(({ value }) => new Date(value))
   @IsDate()
+  @Transform(({ value }) => new Date(value))
   endTime: Date;
 
   @IsNotEmpty()
