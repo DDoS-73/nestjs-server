@@ -4,6 +4,7 @@ import { AuthController } from './controller/auth.controller';
 import { MongoModule } from './infrastructure/mongo/mongo.module';
 import { AuthService } from './service/auth.service';
 import { JwtConfigService } from './service/jwt-config.service';
+import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { JwtConfigService } from './service/jwt-config.service';
     JwtModule.registerAsync({ useClass: JwtConfigService }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}

@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CalendarEventEntity } from 'src/calendar-events/entities';
 import {
@@ -19,8 +20,10 @@ import {
   UpdateCalendarEventQueryDto,
 } from '../dto';
 import { CalendarEventsService } from '../service/calendar-events.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('events')
+@UseGuards(AuthGuard('jwt'))
 export class CalendarEventsController {
   constructor(private readonly calendarEventsService: CalendarEventsService) {}
 
