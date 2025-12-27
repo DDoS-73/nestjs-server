@@ -31,7 +31,9 @@ export class User {
 
   @Prop({ required: true, minlength: 5 })
   password: string;
+
+  @Prop({ type: String, required: false, default: null })
+  hashedRefreshToken: string | null;
 }
 
-export const UserSchema =
-  SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User);

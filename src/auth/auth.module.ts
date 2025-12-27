@@ -5,6 +5,7 @@ import { MongoModule } from './infrastructure/mongo/mongo.module';
 import { AuthService } from './service/auth.service';
 import { JwtConfigService } from './service/jwt-config.service';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { RtStrategy } from './strategy/refresh-token.strategy';
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     JwtModule.registerAsync({ useClass: JwtConfigService }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, RtStrategy],
 })
 export class AuthModule {}

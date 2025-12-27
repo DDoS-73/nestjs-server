@@ -8,6 +8,9 @@ export class UserEntity {
   @Exclude({ toPlainOnly: true })
   password: string;
 
+  @Exclude({ toPlainOnly: true })
+  hashedRefreshToken: string | null;
+
   constructor(user?: Partial<UserEntity>) {
     if (user) {
       Object.assign(this, user);

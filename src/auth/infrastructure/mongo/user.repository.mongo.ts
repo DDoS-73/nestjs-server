@@ -25,4 +25,16 @@ export class UserRepositoryMongo implements IUserRepository {
     const user = await this.userModel.findOne({ email }).exec();
     return user ? plainToInstance(UserEntity, user.toObject()) : null;
   }
+
+  public async update(
+    id: string,
+    user: Partial<UserEntity>,
+  ): Promise<UserEntity | null> {
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(id, user, { new: true })
+      .exec();
+    return updatedUser
+      ? plainToInstance(UserEntity, updatedUser.toObject())
+      : null;
+  }
 }
