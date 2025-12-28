@@ -88,13 +88,13 @@ export class AuthController {
     response.cookie('access_token', accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       maxAge: 90 * 24 * 60 * 60 * 1000, // 3 months
     });
     response.cookie('refresh_token', refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       path: '/auth/refresh',
       maxAge: 90 * 24 * 60 * 60 * 1000, // 3 months
     });
