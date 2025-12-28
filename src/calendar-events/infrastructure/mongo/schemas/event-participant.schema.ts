@@ -1,7 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 
 export type EventParticipantDocument = HydratedDocument<EventParticipant>;
+
+const transform = (
+  doc,
+  ret: EventParticipant & {
+    _id: mongoose.Types.ObjectId;
+    __v: number;
+  },
+) => {
+  if (ret.userId && ret.userId.toString) {
+    ret.userId = ret.userId.toString();
+  }
+  return { ...ret, _id: undefined };
+};
 
 @Schema({
   collection: 'eventParticipants',
@@ -9,20 +22,19 @@ export type EventParticipantDocument = HydratedDocument<EventParticipant>;
     virtuals: true,
     schemaFieldsOnly: true,
     versionKey: false,
-    transform: (doc, ret) => {
-      return { ...ret, _id: undefined };
-    },
+    transform,
   },
   toObject: {
     virtuals: true,
     versionKey: false,
     schemaFieldsOnly: true,
-    transform: (doc, ret) => {
-      return { ...ret, _id: undefined };
-    },
+    transform,
   },
 })
 export class EventParticipant {
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  userId: mongoose.Types.ObjectId | string;
+
   @Prop({ required: true, unique: true })
   name: string;
 }

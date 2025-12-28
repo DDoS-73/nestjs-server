@@ -17,17 +17,20 @@ export class EventParticipantRepositoryMongo
     private eventParticipantModel: Model<EventParticipantDocument>,
   ) {}
 
-  public async getAll(): Promise<EventParticipantEntity[]> {
-    const documents = await this.eventParticipantModel.find().exec();
+  public async getAll(userId: string): Promise<EventParticipantEntity[]> {
+    const documents = await this.eventParticipantModel.find({ userId }).exec();
     return plainToInstance(
       EventParticipantEntity,
       documents.map((doc) => doc.toObject()),
     );
   }
 
-  public async getByName(name: string): Promise<EventParticipantEntity | null> {
+  public async getByName(
+    name: string,
+    userId: string,
+  ): Promise<EventParticipantEntity | null> {
     const document = await this.eventParticipantModel
-      .findOne({ name })
+      .findOne({ name, userId })
       .lean()
       .exec();
     return document ? plainToInstance(EventParticipantEntity, document) : null;

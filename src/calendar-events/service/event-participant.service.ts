@@ -11,17 +11,25 @@ export class EventParticipantService {
     private eventParticipantRepository: IEventParticipantRepository,
   ) {}
 
-  public getAll(): Promise<EventParticipantEntity[]> {
-    return this.eventParticipantRepository.getAll();
+  public getAll(userId: string): Promise<EventParticipantEntity[]> {
+    return this.eventParticipantRepository.getAll(userId);
   }
 
-  public getByName(name: string): Promise<EventParticipantEntity | null> {
-    return this.eventParticipantRepository.getByName(name);
+  public getByName(
+    name: string,
+    userId: string,
+  ): Promise<EventParticipantEntity | null> {
+    return this.eventParticipantRepository.getByName(name, userId);
   }
 
   public create(
     eventParticipant: CreateEventParticipantDto,
+    userId: string,
   ): Promise<EventParticipantEntity> {
-    return this.eventParticipantRepository.create(eventParticipant);
+    const entity = new EventParticipantEntity({
+      ...eventParticipant,
+      userId,
+    });
+    return this.eventParticipantRepository.create(entity);
   }
 }

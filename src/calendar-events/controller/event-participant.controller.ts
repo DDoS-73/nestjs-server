@@ -1,5 +1,7 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import type { Request } from 'express';
+import { JwtPayload } from 'src/auth/models';
 import { EventParticipantEntity } from 'src/calendar-events/entities';
 import { EventParticipantService } from '../service';
 
@@ -11,7 +13,8 @@ export class EventParticipantController {
   ) {}
 
   @Get()
-  public getAll(): Promise<EventParticipantEntity[]> {
-    return this.eventParticipantService.getAll();
+  public getAll(@Req() req: Request): Promise<EventParticipantEntity[]> {
+    const user = req.user as JwtPayload;
+    return this.eventParticipantService.getAll(user.id);
   }
 }

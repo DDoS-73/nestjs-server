@@ -36,6 +36,7 @@ export class CalendarEventsService {
   ): Promise<CalendarEventEntity> {
     const participant: EventParticipantEntity =
       await this._handleParticipantInCalendarEvent(
+        userId,
         calendarEventDto.participant,
       );
 
@@ -101,6 +102,7 @@ export class CalendarEventsService {
   ): Promise<CalendarEventEntity> {
     const participant: EventParticipantEntity =
       await this._handleParticipantInCalendarEvent(
+        userId,
         calendarEventDto.participant,
       );
 
@@ -163,12 +165,16 @@ export class CalendarEventsService {
   }
 
   private async _handleParticipantInCalendarEvent(
+    userId: string,
     participant?: EventParticipantDto,
   ): Promise<EventParticipantEntity> {
     if (participant && !participant.id) {
-      const eventParticipant = await this.eventParticipantService.create({
-        name: participant.name,
-      });
+      const eventParticipant = await this.eventParticipantService.create(
+        {
+          name: participant.name,
+        },
+        userId,
+      );
       return eventParticipant;
     }
 

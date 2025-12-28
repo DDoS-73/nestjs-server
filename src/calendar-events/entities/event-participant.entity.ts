@@ -1,6 +1,8 @@
 export class EventParticipantEntity {
   id?: string;
 
+  userId: string;
+
   name: string;
 
   constructor(eventParticipant?: Partial<EventParticipantEntity>) {

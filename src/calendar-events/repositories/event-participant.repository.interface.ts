@@ -1,11 +1,13 @@
-import { CreateEventParticipantDto } from 'src/calendar-events/dto';
 import { EventParticipantEntity } from '../../calendar-events/entities';
 
 export interface IEventParticipantRepository {
-  getAll(): Promise<EventParticipantEntity[]>;
-  getByName(name: string): Promise<EventParticipantEntity | null>;
+  getAll(userId: string): Promise<EventParticipantEntity[]>;
+  getByName(
+    name: string,
+    userId: string,
+  ): Promise<EventParticipantEntity | null>;
   create(
-    eventParticipant: CreateEventParticipantDto,
+    eventParticipant: EventParticipantEntity,
   ): Promise<EventParticipantEntity>;
 }
 
