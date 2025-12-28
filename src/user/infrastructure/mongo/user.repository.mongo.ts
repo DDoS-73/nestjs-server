@@ -1,8 +1,8 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { plainToInstance } from 'class-transformer';
 import { Model } from 'mongoose';
-import { UserEntity } from 'src/auth/entities';
-import { IUserRepository } from 'src/auth/repositories';
+import { UserEntity } from 'src/user/entities';
+import { IUserRepository } from 'src/user/repositories';
 import { User, UserDocument } from './schemas/user.schema';
 
 export class UserRepositoryMongo implements IUserRepository {

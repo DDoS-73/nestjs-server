@@ -8,12 +8,12 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt-ts';
+import { UserEntity } from 'src/user/entities';
+import type { IUserRepository } from 'src/user/repositories';
+import { USER_REPOSITORY } from 'src/user/repositories';
 import { SignupDto } from '../dto';
 import { LoginDto } from '../dto/login.dto';
-import { UserEntity } from '../entities';
 import { JwtPayload } from '../models';
-import type { IUserRepository } from '../repositories';
-import { USER_REPOSITORY } from '../repositories';
 
 interface Tokens {
   accessToken: string;
