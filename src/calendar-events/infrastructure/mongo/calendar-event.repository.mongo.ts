@@ -23,9 +23,11 @@ export class CalendarEventRepositoryMongo implements ICalendarEventRepository {
   public async getAllInDateRange(
     from: Date,
     to: Date,
+    userId: string,
   ): Promise<CalendarEventEntity[]> {
     return await this.calendarEventModel
       .find({
+        userId,
         startTime: { $lte: to },
         $or: [
           {
@@ -59,35 +61,43 @@ export class CalendarEventRepositoryMongo implements ICalendarEventRepository {
         ...calendarEvent,
         participant: calendarEvent.participant.id,
       });
+    await document.populate('participant');
     return plainToInstance(CalendarEventEntity, document.toObject());
   }
 
   public async update(
     id: string,
     calendarEvent: CalendarEventEntity,
-  ): Promise<CalendarEventEntity> {
+    userId: string,
+  ): Promise<CalendarEventEntity | null> {
     const updatedEvent: CalendarEventDocument | null =
       await this.calendarEventModel
-        .findByIdAndUpdate(
-          id,
+        .findOneAndUpdate(
+          { _id: id, userId },
           {
             ...calendarEvent,
             participant: calendarEvent.participant.id,
           },
           { new: true },
         )
+        .populate('participant')
         .exec();
 
-    return plainToInstance(CalendarEventEntity, updatedEvent?.toObject());
+    return updatedEvent
+      ? plainToInstance(CalendarEventEntity, updatedEvent.toObject())
+      : null;
   }
 
-  public async delete(id: string): Promise<void> {
-    await this.calendarEventModel.deleteOne({ _id: id }).exec();
+  public async delete(id: string, userId: string): Promise<void> {
+    await this.calendarEventModel.deleteOne({ _id: id, userId }).exec();
   }
 
-  public async findById(id: string): Promise<CalendarEventEntity | null> {
+  public async findById(
+    id: string,
+    userId: string,
+  ): Promise<CalendarEventEntity | null> {
     const event: CalendarEventDocument | null = await this.calendarEventModel
-      .findById(id)
+      .findOne({ _id: id, userId })
       .populate('participant')
       .exec();
     return event

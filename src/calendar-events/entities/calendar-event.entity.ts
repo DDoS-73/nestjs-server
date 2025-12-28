@@ -4,6 +4,7 @@ import { RecurrenceEntity } from './recurrence.entity';
 import { Exclude } from 'class-transformer';
 export class CalendarEventEntity {
   id?: string;
+  userId: string;
   startTime: Date;
   endTime: Date;
   participant: EventParticipantEntity;

@@ -32,6 +32,7 @@ export class CalendarEventsService {
 
   public async create(
     calendarEventDto: CreateCalendarEventDto,
+    userId: string,
   ): Promise<CalendarEventEntity> {
     const participant: EventParticipantEntity =
       await this._handleParticipantInCalendarEvent(
@@ -40,6 +41,7 @@ export class CalendarEventsService {
 
     const entity = new CalendarEventEntity({
       ...calendarEventDto,
+      userId,
       participant,
       exceptions: [],
     });
@@ -49,37 +51,43 @@ export class CalendarEventsService {
   public async getAllInDateRange(
     from: Date,
     to: Date,
+    userId: string,
   ): Promise<CalendarEventEntity[]> {
     const potentialEvents: CalendarEventEntity[] =
-      await this.calendarEventRepository.getAllInDateRange(from, to);
+      await this.calendarEventRepository.getAllInDateRange(from, to, userId);
 
     return this._generateCalendarEventsInRange(potentialEvents, from, to);
   }
 
-  public async delete(id: string, mode: DeleteMode, date: Date): Promise<void> {
+  public async delete(
+    id: string,
+    mode: DeleteMode,
+    date: Date,
+    userId: string,
+  ): Promise<void> {
     const calendarEvent: CalendarEventEntity | null =
-      await this.calendarEventRepository.findById(id);
+      await this.calendarEventRepository.findById(id, userId);
     if (!calendarEvent) {
       throw new NotFoundException(`Event with ID "${id}" not found.`);
     }
 
     switch (mode) {
       case DeleteMode.ALL:
-        return this.calendarEventRepository.delete(id);
+        return this.calendarEventRepository.delete(id, userId);
 
       case DeleteMode.SINGLE:
         calendarEvent.exceptions.push(date);
-        await this.calendarEventRepository.update(id, calendarEvent);
+        await this.calendarEventRepository.update(id, calendarEvent, userId);
         return;
 
       case DeleteMode.FUTURE:
         if (calendarEvent.startTime.getTime() === date.getTime()) {
-          await this.calendarEventRepository.delete(id);
+          await this.calendarEventRepository.delete(id, userId);
           return;
         } else {
           const newEndDate = new Date(date.getTime() - 1);
           calendarEvent.recurrence.endDate = newEndDate;
-          await this.calendarEventRepository.update(id, calendarEvent);
+          await this.calendarEventRepository.update(id, calendarEvent, userId);
         }
     }
   }
@@ -89,6 +97,7 @@ export class CalendarEventsService {
     mode: UpdateMode,
     date: Date,
     calendarEventDto: UpdateCalendarEventDto,
+    userId: string,
   ): Promise<CalendarEventEntity> {
     const participant: EventParticipantEntity =
       await this._handleParticipantInCalendarEvent(
@@ -96,7 +105,7 @@ export class CalendarEventsService {
       );
 
     const calendarEvent: CalendarEventEntity | null =
-      await this.calendarEventRepository.findById(id);
+      await this.calendarEventRepository.findById(id, userId);
     if (!calendarEvent) {
       throw new NotFoundException(`Event with ID "${id}" not found.`);
     }
@@ -105,16 +114,25 @@ export class CalendarEventsService {
       case UpdateMode.ALL: {
         const entity = new CalendarEventEntity({
           ...calendarEventDto,
+          userId,
           participant,
         });
-        return await this.calendarEventRepository.update(id, entity);
+        const updatedEvent = await this.calendarEventRepository.update(
+          id,
+          entity,
+          userId,
+        );
+        if (!updatedEvent)
+          throw new NotFoundException(`Event with ID "${id}" not found.`);
+        return updatedEvent;
       }
 
       case UpdateMode.SINGLE: {
         calendarEvent.exceptions.push(date);
-        await this.calendarEventRepository.update(id, calendarEvent);
+        await this.calendarEventRepository.update(id, calendarEvent, userId);
 
         const newSingleEvent = new CalendarEventEntity({
+          userId,
           startTime: calendarEventDto.startTime,
           endTime: calendarEventDto.endTime,
           recurrence: {
@@ -131,10 +149,11 @@ export class CalendarEventsService {
       case UpdateMode.FUTURE: {
         const newEndDate = new Date(date.getTime() - 1);
         calendarEvent.recurrence.endDate = newEndDate;
-        await this.calendarEventRepository.update(id, calendarEvent);
+        await this.calendarEventRepository.update(id, calendarEvent, userId);
 
         const newRecurringEvent = new CalendarEventEntity({
           ...calendarEventDto,
+          userId,
           participant,
           exceptions: [],
         });
